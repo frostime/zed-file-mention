@@ -2,8 +2,8 @@ id = "file-mentions"
 name = "File Mentions"
 version = "0.1.0"
 schema_version = 1
-authors = ["sdfafsa"]
-description = "@-style workspace file path completions for Zed."
+authors = ["frostime"]
+description = "Press @ for quick file path completions."
 repository = "https://github.com/your-name/zed-file-mentions"
 
 [language_servers.file-mentions-lsp]

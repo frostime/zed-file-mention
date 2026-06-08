@@ -2,3 +2,4 @@
 /server/target/
 /.zed/file-mentions/
 tmp
+*.wasm
