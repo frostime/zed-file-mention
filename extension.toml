@@ -1,0 +1,23 @@
+id = "file-mentions"
+name = "File Mentions"
+version = "0.1.0"
+schema_version = 1
+authors = ["sdfafsa"]
+description = "@-style workspace file path completions for Zed."
+repository = "https://github.com/your-name/zed-file-mentions"
+
+[language_servers.file-mentions-lsp]
+name = "File Mentions LSP"
+languages = [
+  "Markdown",
+  "TypeScript",
+  "TSX",
+  "JavaScript",
+  "JSX",
+  "Python",
+  "Rust",
+  "Go",
+  "JSON",
+  "YAML",
+  "TOML"
+]

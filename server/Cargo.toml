@@ -1,0 +1,22 @@
+[package]
+name = "file-mentions-lsp"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-only"
+publish = false
+
+[[bin]]
+name = "file-mentions-lsp"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+fuzzy-matcher = "0.3"
+globset = "0.4"
+ignore = "0.4"
+notify = "6"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "io-std", "sync", "time"] }
+tower-lsp = "0.20"
+url = "2"
