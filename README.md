@@ -14,6 +14,8 @@ Completion inserts:
 @src/index.ts
 ```
 
+![Example](assets/use-example.png)
+
 The extension is implemented as a small Zed wrapper plus a completion-only native language server. The language server maintains an in-memory workspace file index, refreshes it automatically, and returns LSP completion items only when the cursor is inside an `@file-query` token.
 
 ## Scope
