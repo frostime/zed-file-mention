@@ -4,7 +4,7 @@ version = "0.1.0"
 schema_version = 1
 authors = ["frostime"]
 description = "Press @ for quick file path completions."
-repository = "https://github.com/your-name/zed-file-mentions"
+repository = "https://github.com/frostime/zed-file-mentions"
 
 [language_servers.file-mentions-lsp]
 name = "File Mentions LSP"

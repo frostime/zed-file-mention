@@ -2,6 +2,12 @@
 
 `File Mentions` is a Zed extension that provides `@file` workspace path completions.
 
+- `@file-query` completion for workspace file path.
+- `.gitignore` / `.ignore` aware scanning.
+- Default exclusion for `.git`, `node_modules`, `.venv`, `venv`, `dist`, `build`, `target`, `.next`, `coverage`, Python caches, and similar noisy directories.
+- File watcher based index refresh with a TTL rescan fallback.
+
+
 Example:
 
 ```text
@@ -16,30 +22,24 @@ Completion inserts:
 
 ![Example](assets/use-example.png)
 
-The extension is implemented as a small Zed wrapper plus a completion-only native language server. The language server maintains an in-memory workspace file index, refreshes it automatically, and returns LSP completion items only when the cursor is inside an `@file-query` token.
+## Development
 
-## Scope
+> [!NOTE]
+> This feature is implemented via LSP extensions, since zed, unlike vscode, does not provide flexible extension mechanisms.  
+> However, it is not a dedicated LSP extension — it provides no diagnostics, hovers, etc. — it merely leverages the completion feature.
 
-This extension does:
+```text
+.
+├── extension.toml
+├── Cargo.toml              # Zed extension WASM wrapper crate
+├── src/lib.rs
+├── server/                 # Native LSP server; separate Rust project
+└── docs/development/
+```
 
-- `@file-query` completion.
-- Workspace file path indexing.
-- `.gitignore` / `.ignore` aware scanning.
-- Default exclusion for `.git`, `node_modules`, `.venv`, `venv`, `dist`, `build`, `target`, `.next`, `coverage`, Python caches, and similar noisy directories.
-- File watcher based index refresh with a TTL rescan fallback.
-- LSP completion only.
+The native LSP server intentionally lives outside the root Cargo workspace. Zed compiles the root extension crate as WASM; the LSP server is a native process launched by the wrapper.
 
-This extension does not do:
-
-- Diagnostics.
-- Hover.
-- Definition / references / rename.
-- Formatting.
-- File content search.
-- Symbol search.
-- Manual index management as a user workflow.
-
-## Development status
+### Development status
 
 This repository is currently a development prototype.
 
@@ -52,7 +52,7 @@ This is a development/testing override, not the intended final end-user installa
 
 A published extension should resolve the native LSP binary internally, typically by downloading a platform-specific release asset or by finding a system-installed binary. Users should not normally need to add `binary.path` just to use the extension.
 
-## Local development install
+### Local development install
 
 Build the native language server:
 
@@ -79,6 +79,19 @@ On Windows, point to `file-mentions-lsp.exe`.
 Then install the extension as a Zed dev extension from this repository root.
 
 Important: Zed `settings.json` is not a registry of installed language servers. Installed LSP extensions do not necessarily appear under the `lsp` key. The `lsp` section is mainly for user overrides such as binary path, initialization options, or server-specific settings.
+
+### Dev Commands
+
+```bash
+cargo build --manifest-path server/Cargo.toml --release
+cargo test --manifest-path server/Cargo.toml
+```
+
+Root crate build is the Zed extension wrapper only:
+
+```bash
+cargo check
+```
 
 ## Configuration
 
@@ -118,33 +131,8 @@ User-facing behavior may be configured through `lsp.file-mentions-lsp.initializa
 
 User `exclude` patterns are additive. Built-in hygiene excludes remain active.
 
-## Development commands
 
-```bash
-cargo build --manifest-path server/Cargo.toml --release
-cargo test --manifest-path server/Cargo.toml
-```
-
-Root crate build is the Zed extension wrapper only:
-
-```bash
-cargo check
-```
-
-## Repository layout
-
-```text
-.
-├── extension.toml
-├── Cargo.toml              # Zed extension WASM wrapper crate
-├── src/lib.rs
-├── server/                 # Native LSP server; separate Rust project
-└── docs/development/
-```
-
-The native LSP server intentionally lives outside the root Cargo workspace. Zed compiles the root extension crate as WASM; the LSP server is a native process launched by the wrapper.
-
-## Published extension TODO
+## TODO | Published extension
 
 Before marketplace release, add binary resolution logic to the wrapper:
 
@@ -155,5 +143,3 @@ current platform
   -> make executable where needed
   -> launch downloaded binary
 ```
-
-Until that exists, this repository should be treated as a local development extension.
