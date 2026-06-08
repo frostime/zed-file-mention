@@ -43,8 +43,8 @@ impl FileMentionsServer {
 #[async_trait]
 impl LanguageServer for FileMentionsServer {
     async fn initialize(&self, params: InitializeParams) -> LspResult<InitializeResult> {
-        let config = Config::from_initialization_options(params.initialization_options);
         let roots = workspace_roots(&params);
+        let config = Config::from_initialization_options(params.initialization_options);
 
         if let Ok(mut guard) = self.runtime.write() {
             *guard = Some(RuntimeState {

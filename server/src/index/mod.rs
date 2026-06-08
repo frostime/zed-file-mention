@@ -17,12 +17,18 @@ pub struct FileEntry {
     pub depth: u16,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileIndex {
     pub entries: Vec<FileEntry>,
     pub truncated: bool,
     #[serde(skip, default = "SystemTime::now")]
     pub updated_at: SystemTime,
+}
+
+impl Default for FileIndex {
+    fn default() -> Self {
+        Self::empty()
+    }
 }
 
 impl FileIndex {
