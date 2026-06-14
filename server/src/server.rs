@@ -55,7 +55,9 @@ impl LanguageServer for FileMentionsServer {
 
         Ok(InitializeResult {
             capabilities: ServerCapabilities {
-                text_document_sync: Some(TextDocumentSyncCapability::Kind(TextDocumentSyncKind::FULL)),
+                text_document_sync: Some(TextDocumentSyncCapability::Kind(
+                    TextDocumentSyncKind::FULL,
+                )),
                 completion_provider: Some(CompletionOptions {
                     resolve_provider: Some(false),
                     trigger_characters: Some(vec![config.completion.trigger.clone()]),
@@ -77,7 +79,10 @@ impl LanguageServer for FileMentionsServer {
 
         if runtime.roots.is_empty() {
             self.client
-                .log_message(MessageType::WARNING, "File Mentions: no workspace root found")
+                .log_message(
+                    MessageType::WARNING,
+                    "File Mentions: no workspace root found",
+                )
                 .await;
             return;
         }
@@ -100,7 +105,7 @@ impl LanguageServer for FileMentionsServer {
                         .log_message(
                             MessageType::LOG,
                             format!(
-                                "File Mentions index ready: {len} files{}",
+                                "File Mentions index ready: {len} entries{}",
                                 if truncated { " (truncated)" } else { "" }
                             ),
                         )

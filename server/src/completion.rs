@@ -1,5 +1,6 @@
 use crate::config::Config;
 use crate::index::scoring::ScoredEntry;
+use crate::index::EntryKind;
 use std::path::Path;
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, CompletionTextEdit, Position, Range, TextEdit,
@@ -11,7 +12,11 @@ pub struct MentionToken {
     pub range: Range,
 }
 
-pub fn extract_mention_token(text: &str, position: Position, config: &Config) -> Option<MentionToken> {
+pub fn extract_mention_token(
+    text: &str,
+    position: Position,
+    config: &Config,
+) -> Option<MentionToken> {
     let line = text.lines().nth(position.line as usize)?;
     let cursor_byte = byte_index_from_utf16(line, position.character as usize)?;
     let before = &line[..cursor_byte];
@@ -64,8 +69,19 @@ pub fn completion_item_for_score(
         .filter(|path| !path.is_empty())
         .unwrap_or_else(|| ".".into());
 
-    let label = format!("{} — {display_parent}/", entry.file_name);
-    let mut new_text = entry.rel_path.clone();
+    let item_kind = match entry.kind {
+        EntryKind::File => CompletionItemKind::FILE,
+        EntryKind::Directory => CompletionItemKind::FOLDER,
+    };
+    let label_name = match entry.kind {
+        EntryKind::File => entry.file_name.clone(),
+        EntryKind::Directory => format!("{}/", entry.file_name),
+    };
+    let label = format!("{label_name} — {display_parent}/");
+    let mut new_text = match entry.kind {
+        EntryKind::File => entry.rel_path.clone(),
+        EntryKind::Directory => format!("{}/", entry.rel_path),
+    };
     if config.insert.keep_trigger {
         new_text = format!("{}{}", config.completion.trigger, new_text);
     }
@@ -75,7 +91,7 @@ pub fn completion_item_for_score(
 
     CompletionItem {
         label,
-        kind: Some(CompletionItemKind::FILE),
+        kind: Some(item_kind),
         detail: Some(format!("{} · {}", entry.rel_path, entry.root_name)),
         filter_text: Some(format!("{} {}", entry.file_name, entry.rel_path)),
         sort_text: Some(format!("{:04}", rank)),
@@ -85,6 +101,7 @@ pub fn completion_item_for_score(
         })),
         data: Some(serde_json::json!({
             "rel_path": entry.rel_path,
+            "kind": entry.kind,
             "score": scored.score
         })),
         ..CompletionItem::default()
@@ -141,6 +158,8 @@ fn utf16_len(text: &str) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::index::{EntryKind, FileEntry};
+    use std::path::PathBuf;
 
     #[test]
     fn extracts_simple_mentions() {
@@ -169,5 +188,82 @@ mod tests {
             &config,
         )
         .is_none());
+    }
+
+    #[test]
+    fn directory_completion_uses_folder_kind_and_trailing_slash() {
+        let config = Config::default();
+        let token = MentionToken {
+            query: "sr".into(),
+            range: Range {
+                start: Position {
+                    line: 0,
+                    character: 0,
+                },
+                end: Position {
+                    line: 0,
+                    character: 3,
+                },
+            },
+        };
+        let scored = ScoredEntry {
+            entry: FileEntry {
+                root: PathBuf::from("/workspace"),
+                root_name: "workspace".into(),
+                rel_path: "src".into(),
+                file_name: "src".into(),
+                stem: "src".into(),
+                extension: None,
+                depth: 0,
+                kind: EntryKind::Directory,
+            },
+            score: 1,
+        };
+
+        let item = completion_item_for_score(scored, &token, 0, &config);
+        assert_eq!(item.kind, Some(CompletionItemKind::FOLDER));
+        assert_eq!(item.label, "src/ — ./");
+        let Some(CompletionTextEdit::Edit(edit)) = item.text_edit else {
+            panic!("expected text edit");
+        };
+        assert_eq!(edit.new_text, "@src/");
+    }
+
+    #[test]
+    fn directory_completion_with_spaces_respects_quote_config() {
+        let mut config = Config::default();
+        config.insert.quote_paths_with_spaces = true;
+        let token = MentionToken {
+            query: "my".into(),
+            range: Range {
+                start: Position {
+                    line: 0,
+                    character: 0,
+                },
+                end: Position {
+                    line: 0,
+                    character: 3,
+                },
+            },
+        };
+        let scored = ScoredEntry {
+            entry: FileEntry {
+                root: PathBuf::from("/workspace"),
+                root_name: "workspace".into(),
+                rel_path: "my dir".into(),
+                file_name: "my dir".into(),
+                stem: "my dir".into(),
+                extension: None,
+                depth: 0,
+                kind: EntryKind::Directory,
+            },
+            score: 1,
+        };
+
+        let item = completion_item_for_score(scored, &token, 0, &config);
+        let Some(CompletionTextEdit::Edit(edit)) = item.text_edit else {
+            panic!("expected text edit");
+        };
+        assert_eq!(edit.new_text, "\"@my dir/\"");
     }
 }

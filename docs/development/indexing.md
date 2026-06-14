@@ -2,7 +2,7 @@
 
 ## Core rule
 
-Completion requests must not scan the filesystem. Completion reads only from the in-memory index.
+Completion requests must not scan the filesystem. Completion reads only from the in-memory file and directory index.
 
 ## Lifecycle
 
@@ -31,7 +31,7 @@ Default behavior:
 
 - respect `.gitignore`
 - respect `.ignore`
-- ignore hidden files unless configured otherwise
+- ignore hidden files and directories unless configured otherwise
 - do not follow symlinks unless configured otherwise
 - hard exclude noisy directories
 
@@ -53,8 +53,14 @@ __pycache__/
 .ruff_cache/
 ```
 
+## Directory entries
+
+Directory entries are indexed alongside file entries. The workspace root itself is not returned as a completion candidate; non-root directories, including empty directories, are returned. Directory completions use LSP folder kind and insert a trailing slash, for example `@src/`.
+
+`include` globs filter file entries. Directory entries are still available so file-type filters such as `**/*.rs` do not hide parent directories. Ignore, hidden, symlink, and `exclude` rules apply to both files and directories.
+
 ## Limits
 
-- `max_files` prevents runaway indexing.
+- `max_files` caps indexed file entries. Directory entries do not consume the file quota.
 - `max_results` caps completion output.
 - TTL refresh is a fallback for missed watcher events.

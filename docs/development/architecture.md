@@ -11,8 +11,8 @@ Zed extension wrapper
 file-mentions-lsp
   -> receives LSP completion requests over stdio
   -> keeps open document text
-  -> maintains an in-memory workspace file index
-  -> returns CompletionItem[] only for @file-query tokens
+  -> maintains an in-memory workspace path index
+  -> returns file and directory CompletionItem[] only for @file-query tokens
 ```
 
 ## Root extension crate
@@ -53,7 +53,7 @@ Published-extension target behavior:
 - LSP lifecycle.
 - Document text sync.
 - Workspace root discovery.
-- File indexing.
+- File and directory indexing.
 - File watcher refresh.
 - Completion token extraction and ranking.
 

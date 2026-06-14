@@ -6,6 +6,13 @@ use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::time::SystemTime;
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum EntryKind {
+    File,
+    Directory,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct FileEntry {
     pub root: PathBuf,
@@ -15,6 +22,7 @@ pub struct FileEntry {
     pub stem: String,
     pub extension: Option<String>,
     pub depth: u16,
+    pub kind: EntryKind,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

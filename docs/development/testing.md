@@ -38,15 +38,15 @@ cargo check
 
 3. Install the repository root as a Zed dev extension.
 
-4. Open a workspace containing multiple files named `index.ts` or `README.md`.
+4. Open a workspace containing multiple files named `index.ts` or `README.md`, plus directories such as `src/`.
 
-5. Type `@index.ts` or `@README.md` in a supported buffer.
+5. Type `@index.ts`, `@README.md`, or `@src` in a supported buffer.
 
-6. Confirm completion items insert `@relative/path`.
+6. Confirm file completion items insert `@relative/path` and directory completion items insert `@relative/path/`.
 
-7. Create a new file and confirm it appears after watcher refresh.
+7. Create a new file or directory and confirm it appears after watcher refresh.
 
-8. Delete or rename a file and confirm stale entries disappear after refresh.
+8. Delete or rename a file or directory and confirm stale entries disappear after refresh.
 
 ## Expected settings behavior
 

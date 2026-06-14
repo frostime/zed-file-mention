@@ -1,11 +1,11 @@
 # File Mentions
 
-`File Mentions` is a Zed extension that provides `@file` workspace path completions.
+`File Mentions` is a Zed extension that provides `@file` and `@directory` workspace path completions.
 
-- `@file-query` completion for workspace file path.
+- `@file-query` completion for workspace file and directory paths.
 - `.gitignore` / `.ignore` aware scanning.
 - Default exclusion for `.git`, `node_modules`, `.venv`, `venv`, `dist`, `build`, `target`, `.next`, `coverage`, Python caches, and similar noisy directories.
-- File watcher based index refresh with a TTL rescan fallback.
+- File watcher based path index refresh with a TTL rescan fallback.
 
 
 Example:
@@ -18,6 +18,12 @@ Completion inserts:
 
 ```text
 @src/index.ts
+```
+
+Directories are returned with folder completion kind and insert a trailing slash:
+
+```text
+@src/
 ```
 
 ![Example](assets/use-example.png)

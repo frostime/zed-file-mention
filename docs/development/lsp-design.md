@@ -34,7 +34,10 @@ Default insertion keeps the trigger:
 
 ```text
 @index.ts -> @src/index.ts
+@sr -> @src/
 ```
+
+File candidates use LSP file kind. Directory candidates use LSP folder kind and insert a trailing slash.
 
 ## Non-goals
 

@@ -61,7 +61,7 @@ This keeps the end-user installation flow simple:
 ```text
 install extension
   -> open workspace
-  -> use @file completion
+  -> use @file and @directory completion
 ```
 
 No manual `binary.path` should be required for normal users.

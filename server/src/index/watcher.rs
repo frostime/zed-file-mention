@@ -116,7 +116,7 @@ pub fn rebuild(
                 client,
                 tower_lsp::lsp_types::MessageType::LOG,
                 format!(
-                    "File Mentions index refreshed: {len} files{}",
+                    "File Mentions index refreshed: {len} entries{}",
                     if truncated { " (truncated)" } else { "" }
                 ),
             );

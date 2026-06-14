@@ -76,8 +76,8 @@ Behavioral configuration is passed through `lsp.file-mentions-lsp.initialization
 
 ## Merge semantics
 
-- `include` replaces the default include list.
-- `exclude` is additive; built-in hygiene excludes remain active.
+- `include` replaces the default include list for file entries. Directory entries remain available so file-type filters do not hide parent directories.
+- `exclude` is additive and applies to both file and directory entries; built-in hygiene excludes remain active.
 
 ## Important defaults
 
@@ -86,7 +86,7 @@ Behavioral configuration is passed through `lsp.file-mentions-lsp.initialization
 - `respect_ignore_files = true`
 - `include_hidden = false`
 - `follow_symlinks = false`
-- `max_files = 100000`
+- `max_files = 100000` (caps indexed file entries; directories do not consume the file quota)
 - `max_results = 50`
 - `refresh_ttl_seconds = 60`
 

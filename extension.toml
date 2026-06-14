@@ -1,9 +1,9 @@
 id = "file-mentions"
 name = "File Mentions"
-version = "0.1.0"
+version = "0.2.0"
 schema_version = 1
 authors = ["frostime"]
-description = "Press @ for quick file path completions."
+description = "Press @ for quick file and directory path completions."
 repository = "https://github.com/frostime/zed-file-mentions"
 
 [language_servers.file-mentions-lsp]
