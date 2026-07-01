@@ -285,6 +285,26 @@ mod tests {
         fs::remove_dir_all(root).unwrap();
     }
 
+    #[test]
+    fn external_files_are_not_indexed() {
+        let root = temp_root();
+        let external = temp_root();
+        fs::create_dir_all(root.join("src")).unwrap();
+        fs::create_dir_all(external.join("secret")).unwrap();
+        fs::write(root.join("src/main.rs"), "").unwrap();
+        fs::write(external.join("secret/leaked.txt"), "").unwrap();
+
+        let config = IndexConfig::default();
+        let index = scan_roots(&[root.clone()], &config).unwrap();
+        let paths: Vec<_> = index.entries.iter().map(|e| e.rel_path.clone()).collect();
+
+        assert!(paths.contains(&"src/main.rs".into()));
+        assert!(!paths.contains(&"secret/leaked.txt".into()));
+
+        fs::remove_dir_all(root).unwrap();
+        fs::remove_dir_all(external).unwrap();
+    }
+
     fn temp_root() -> PathBuf {
         let nanos = SystemTime::now()
             .duration_since(UNIX_EPOCH)
